@@ -27,3 +27,5 @@ yarn-error.log*
 .env
 supabaseClient.js
 data/constants.js
+constants.js
+data/constants.js

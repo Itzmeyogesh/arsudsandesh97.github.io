@@ -59,7 +59,7 @@ const Projects = ({ openModal, setOpenModal }) => {
       <Wrapper>
         <Title>Projects</Title>
         <ToggleButtonGroup>
-          {['all', 'Power Bi Dashboard', 'EDA Using Python', 'Excel Dashboard'].map((category) => (
+          {['All', 'Power Bi Dashboard', 'EDA Using Python', 'Excel Dashboard'].map((category) => (
             <React.Fragment key={category}>
               <ToggleButton
                 active={toggle === category}
@@ -74,7 +74,7 @@ const Projects = ({ openModal, setOpenModal }) => {
         </ToggleButtonGroup>
         <CardContainer>
           {projects
-            .filter((project) => toggle === 'all' || project.category === toggle)
+            .filter((project) => toggle === 'All' || project.category === toggle)
             .map((project) => (
               <ProjectCard key={project.id} project={project} openModal={openModal} setOpenModal={setOpenModal} />
             ))}
