@@ -39,7 +39,7 @@ const Card = styled.div`
 
 
 const Projects = ({ openModal, setOpenModal }) => {
-  const [toggle, setToggle] = useState('all');
+  const [toggle, setToggle] = useState('All');
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
