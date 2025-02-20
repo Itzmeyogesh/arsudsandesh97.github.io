@@ -111,24 +111,48 @@ const Members = styled.div`
     display: flex;
     align-items: center;
     padding-left: 10px;
+    margin-bottom: ${props => props.isLast ? '0' : '8px'}; // Add margin between sections
 `
 const Avatar = styled.img`
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
+    margin-top: 12px;
     margin-left: -10px;
     background-color: ${({ theme }) => theme.white};
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
     border: 3px solid ${({ theme }) => theme.card};
 `
 
+const MemberAvatar = styled(Avatar)`
+    border: 2px solid ${({ theme }) => theme.primary};
+    transition: all 0.3s ease;
+    
+    &:hover {
+        transform: scale(1.1);
+        z-index: 10;
+    }
+`;
+
+const AssociationAvatar = styled(Avatar)`
+    border: 2px solid ${({ theme }) => theme.text_secondary};
+    transition: all 0.3s ease;
+    
+    &:hover {
+        transform: scale(1.1);
+        z-index: 10;
+    }
+`;
+
 const ProjectCards = ({project,setOpenModal}) => {
+    const placeholderImage = "https://via.placeholder.com/150";
+    
     return (
         <Card onClick={() => setOpenModal({state: true, project: project})}>
-            <Image src={project.image}/>
+            <Image src={project.image || placeholderImage}/>
             <Tags>
                 {project.tags?.map((tag, index) => (
-                <Tag>{tag}</Tag>
+                <Tag key={index}>{tag}</Tag>
                 ))}
             </Tags>
             <Details>
@@ -136,12 +160,30 @@ const ProjectCards = ({project,setOpenModal}) => {
                 <Date>{project.date}</Date>
                 <Description>{project.description}</Description>
             </Details>
-            <Members>
-                {project.member?.map((member) => (
-                    <Avatar src={member.img}/>
-                ))}
-            </Members>
-            {/* <Button>View Project</Button> */}
+            {/* Only render members section if there are members */}
+            {project.members && project.members.length > 0 && (
+                <Members>
+                    {project.members.map((member) => (
+                        <MemberAvatar 
+                            key={member.id} 
+                            src={member.img || placeholderImage}
+                            onError={(e) => {e.target.src = placeholderImage}}
+                        />
+                    ))}
+                </Members>
+            )}
+            {/* Only render associations section if there are associations */}
+            {project.associations && project.associations.length > 0 && (
+                <Members isLast={true}>
+                    {project.associations.map((assoc) => (
+                        <AssociationAvatar 
+                            key={assoc.id} 
+                            src={assoc.img || placeholderImage}
+                            onError={(e) => {e.target.src = placeholderImage}}
+                        />
+                    ))}
+                </Members>
+            )}
         </Card>
     )
 }
