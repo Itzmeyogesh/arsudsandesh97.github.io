@@ -1,51 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import { fetchSkillsData } from "../../api/supabase";
 
 const Container = styled.div`
-display: flex;
-flex-direction: column;
-justify-content: center;
-position: relative;
-z-index: 1;
-align-items: center;
-`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  align-items: center;
+`;
 
 const Wrapper = styled.div`
-position: relative;
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-direction: column;
-width: 100%;
-max-width: 1100px;
-gap: 12px;
-@media (max-width: 960px) {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1100px;
+  gap: 12px;
+  @media (max-width: 960px) {
     flex-direction: column;
-}
-`
+  }
+`;
 
 export const Title = styled.div`
-font-size: 42px;
-text-align: center;
-font-weight: 600;
-margin-top: 20px;
+  font-size: 42px;
+  text-align: center;
+  font-weight: 600;
+  margin-top: 20px;
   color: ${({ theme }) => theme.text_primary};
   @media (max-width: 768px) {
-margin-top: 12px;
-      font-size: 32px;
+    margin-top: 12px;
+    font-size: 32px;
   }
 `;
 
 export const Desc = styled.div`
-    font-size: 18px;
-    text-align: center;
-    max-width: 600px;
-    color: ${({ theme }) => theme.text_secondary};
-    @media (max-width: 768px) {
-        font-size: 16px;
-    }
+  font-size: 18px;
+  text-align: center;
+  max-width: 600px;
+  color: ${({ theme }) => theme.text_secondary};
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
 `;
 
 const SkillsContainer = styled.div`
@@ -55,18 +56,18 @@ const SkillsContainer = styled.div`
   margin-top: 30px;
   gap: 30px;
   justify-content: center;
-`
+`;
 
 const Skill = styled(motion.div)`
   width: 100%;
   max-width: 500px;
   background: ${({ theme }) => theme.card};
-  border: 0.1px solid #854CE6;
+  border: 0.1px solid #854ce6;
   box-shadow: rgba(23, 92, 230, 0.15) 0px 4px 24px;
   border-radius: 16px;
   padding: 18px 36px;
   transition: all 0.3s ease-in-out;
-  
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 5px 20px rgba(133, 76, 230, 0.3);
@@ -80,7 +81,7 @@ const Skill = styled(motion.div)`
     max-width: 330px;
     padding: 10px 36px;
   }
-`
+`;
 
 const SkillTitle = styled.h2`
   font-size: 28px;
@@ -88,15 +89,15 @@ const SkillTitle = styled.h2`
   color: ${({ theme }) => theme.text_secondary};
   margin-bottom: 20px;
   text-align: center;
-`
+`;
 
 const SkillList = styled.div`
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 20px;
-`
+`;
 
 const SkillItem = styled(motion.div)`
   font-size: 16px;
@@ -111,10 +112,10 @@ const SkillItem = styled(motion.div)`
   gap: 8px;
   transition: all 0.3s ease;
   cursor: pointer;
-  
+
   &:hover {
     background: ${({ theme }) => theme.card + 99};
-    border: 1px solid #854CE6;
+    border: 1px solid #854ce6;
     box-shadow: 0 0 10px rgba(133, 76, 230, 0.3);
   }
 
@@ -126,52 +127,30 @@ const SkillItem = styled(motion.div)`
     font-size: 14px;
     padding: 6px 12px;
   }
-`
+`;
 
 const SkillImage = styled.img`
   width: 24px;
   height: 24px;
   border-radius: 4px;
   transition: transform 0.3s ease;
-  
+
   ${SkillItem}:hover & {
     transform: scale(1.2);
   }
-`
+`;
 
 const Skills = () => {
-  const [skillsData, setSkillsData] = useState([]);
+  const [skills, setSkills] = useState([]);
 
   useEffect(() => {
-    const fetchSkills = async () => {
-      try {
-        // Fetch categories
-        const { data: categories, error: categoriesError } = await supabase
-          .from("skill_categories")
-          .select("*");
-
-        if (categoriesError) throw categoriesError;
-
-        // Fetch skills
-        const { data: skills, error: skillsError } = await supabase
-          .from("skills")
-          .select("*");
-
-        if (skillsError) throw skillsError;
-
-        // Map skills into categories
-        const formattedSkills = categories.map((category) => ({
-          title: category.title,
-          skills: skills.filter((skill) => skill.category_id === category.id),
-        }));
-
-        setSkillsData(formattedSkills);
-      } catch (error) {
-        console.error("Error fetching skills:", error.message);
+    const getSkillsData = async () => {
+      const { data, error } = await fetchSkillsData();
+      if (!error && data) {
+        setSkills(data);
       }
     };
-
-    fetchSkills();
+    getSkillsData();
   }, []);
 
   // Animation variants
@@ -180,9 +159,9 @@ const Skills = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.3
-      }
-    }
+        staggerChildren: 0.3,
+      },
+    },
   };
 
   const skillVariants = {
@@ -191,9 +170,9 @@ const Skills = () => {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5
-      }
-    }
+        duration: 0.5,
+      },
+    },
   };
 
   const itemVariants = {
@@ -202,9 +181,9 @@ const Skills = () => {
       scale: 1,
       opacity: 1,
       transition: {
-        duration: 0.3
-      }
-    }
+        duration: 0.3,
+      },
+    },
   };
 
   return (
@@ -217,7 +196,7 @@ const Skills = () => {
           animate="visible"
         >
           <SkillsContainer>
-            {skillsData.map((category, index) => (
+            {skills.map((category, index) => (
               <Skill
                 key={index}
                 variants={skillVariants}

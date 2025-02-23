@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container, Wrapper, Title } from "./ProjectsStyle";
 import ProjectCard from "../Cards/ProjectCards";
-import { supabase } from "../../supabaseClient";
+import { fetchProjects } from "../../api/supabase";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -349,18 +349,13 @@ const Projects = ({ openModal, setOpenModal }) => {
   };
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*,members(*),associations(*)");
-      if (error) {
-        console.error("Error fetching projects:", error);
-      } else {
-        console.log("Project data:", data); // Check the structure
+    const getProjectsData = async () => {
+      const { data, error } = await fetchProjects();
+      if (!error && data) {
         setProjects(data);
       }
     };
-    fetchProjects();
+    getProjectsData();
   }, []);
 
   // Add this inside your Projects component, before the return statement

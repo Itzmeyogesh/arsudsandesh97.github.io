@@ -17,33 +17,22 @@ import {
 import { FaBars } from "react-icons/fa";
 import { Close, CloseRounded } from "@mui/icons-material";
 import { useTheme } from "styled-components";
+import { fetchNavData } from "../../api/supabase";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [navData, setNavData] = useState(null);
+  const [navData, setNavData] = useState({});
   const theme = useTheme();
 
   useEffect(() => {
-    fetchNavData();
-  }, []);
-
-  const fetchNavData = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("bio")
-        .select("name, github")
-        .single();
-
-      if (error) {
-        console.error("Error fetching nav data:", error);
-        return;
+    const getNavData = async () => {
+      const { data, error } = await fetchNavData();
+      if (!error && data) {
+        setNavData(data);
       }
-
-      setNavData(data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+    };
+    getNavData();
+  }, []);
 
   return (
     <Nav>
@@ -55,7 +44,7 @@ const Navbar = () => {
           <FaBars onClick={() => setIsOpen(!isOpen)} />
         </MobileIcon>
         <NavItems>
-          <NavLink href="/about">About</NavLink>
+          <NavLink href="#about">About</NavLink>
           <NavLink href="#skills">Skills</NavLink>
           <NavLink href="#experience">Experience</NavLink>
           <NavLink href="#projects">Projects</NavLink>
@@ -115,7 +104,7 @@ const Navbar = () => {
                 color: "white",
                 width: "max-content",
               }}
-              href={navData?.github_url}
+              href={navData?.github}
               target="_blank"
             >
               Github Profile

@@ -1,8 +1,8 @@
 import { ThemeProvider } from "styled-components";
 import { useState } from "react";
-import { darkTheme } from './utils/Themes.js'
+import { darkTheme } from "./utils/Themes.js";
 import Navbar from "./components/Navbar";
-import './App.css';
+import "./App.css";
 import HeroSectionSection from "./components/HeroSection";
 import Skills from "./components/Skills";
 import Projects from "./components/Projects";

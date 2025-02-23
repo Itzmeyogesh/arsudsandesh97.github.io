@@ -24,27 +24,19 @@ import {
 } from "../../utils/motion";
 import { Tilt } from "react-tilt";
 import StarCanvas from "../canvas/Stars";
+import { fetchBioData } from "../../api/supabase";
 
 const HeroSection = () => {
-  const [bioData, setBioData] = useState({
-    name: "",
-    roles: [],
-    description: "",
-    resume: "",
-    Image: "", // Add image_url to store the fetched image URL
-  });
+  const [bioData, setBioData] = useState({});
 
   useEffect(() => {
-    const fetchBioData = async () => {
-      const { data, error } = await supabase.from("bio").select("*").single(); // Fetch a single record
-      if (error) {
-        console.error("Error fetching bio data:", error);
-      } else {
+    const getBioData = async () => {
+      const { data, error } = await fetchBioData();
+      if (!error && data) {
         setBioData(data);
       }
     };
-
-    fetchBioData();
+    getBioData();
   }, []);
 
   return (
@@ -88,18 +80,18 @@ const HeroSection = () => {
                 <Tilt options={{ max: 25, scale: 1.05 }}>
                   <FloatingImage
                     initial={{ opacity: 0, scale: 0.5, y: 20 }}
-                    animate={{ 
-                      opacity: 1, 
+                    animate={{
+                      opacity: 1,
                       scale: 1,
-                      y: 0 
+                      y: 0,
                     }}
                     transition={{
                       duration: 0.8,
                       ease: "easeOut",
                     }}
                   >
-                    <Img 
-                      src={bioData.Image} 
+                    <Img
+                      src={bioData.Image}
                       alt={bioData.name}
                       loading="lazy"
                     />

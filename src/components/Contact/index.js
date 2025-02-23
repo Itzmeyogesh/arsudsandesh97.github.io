@@ -1,9 +1,13 @@
-import React, { useRef, useState } from 'react';
-import styled from 'styled-components';
-import emailjs from '@emailjs/browser';
-import { Snackbar, SnackbarContent } from '@mui/material';
-import { supabase } from '../../supabaseClient';
-import { EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_USER_ID } from './emailConfig';
+import React, { useRef } from "react";
+import styled from "styled-components";
+import emailjs from "@emailjs/browser";
+import toast, { Toaster } from "react-hot-toast";
+import { supabase } from "../../supabaseClient";
+import {
+  EMAILJS_SERVICE_ID,
+  EMAILJS_TEMPLATE_ID,
+  EMAILJS_USER_ID,
+} from "./emailConfig";
 
 const Container = styled.div`
   display: flex;
@@ -108,9 +112,21 @@ const ContactButton = styled.input`
   text-decoration: none;
   text-align: center;
   background: hsla(271, 100%, 50%, 1);
-  background: linear-gradient(225deg, hsla(271, 100%, 50%, 1) 0%, hsla(294, 100%, 50%, 1) 100%);
-  background: -moz-linear-gradient(225deg, hsla(271, 100%, 50%, 1) 0%, hsla(294, 100%, 50%, 1) 100%);
-  background: -webkit-linear-gradient(225deg, hsla(271, 100%, 50%, 1) 0%, hsla(294, 100%, 50%, 1) 100%);
+  background: linear-gradient(
+    225deg,
+    hsla(271, 100%, 50%, 1) 0%,
+    hsla(294, 100%, 50%, 1) 100%
+  );
+  background: -moz-linear-gradient(
+    225deg,
+    hsla(271, 100%, 50%, 1) 0%,
+    hsla(294, 100%, 50%, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    225deg,
+    hsla(271, 100%, 50%, 1) 0%,
+    hsla(294, 100%, 50%, 1) 100%
+  );
   padding: 13px 16px;
   margin-top: 2px;
   border-radius: 12px;
@@ -121,25 +137,28 @@ const ContactButton = styled.input`
 `;
 
 const Contact = () => {
-  const [openSnackbar, setOpenSnackbar] = useState(false);
   const formRef = useRef();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
+    const loadingToast = toast.loading("Sending message...");
+
     const formData = new FormData(formRef.current);
     const data = {
-      email: formData.get('from_email'),
-      name: formData.get('from_name'),
-      subject: formData.get('subject'),
-      message: formData.get('message'),
+      email: formData.get("from_email"),
+      name: formData.get("from_name"),
+      subject: formData.get("subject"),
+      message: formData.get("message"),
     };
-  
+
     try {
       // Store data in Supabase
-      const { error } = await supabase.from('contacts').insert([data]);
-      if (error) throw error;
-  
+      const { error: supabaseError } = await supabase
+        .from("contacts")
+        .insert([data]);
+      if (supabaseError) throw supabaseError;
+
       // Send email using EmailJS
       await emailjs.sendForm(
         EMAILJS_SERVICE_ID,
@@ -147,20 +166,52 @@ const Contact = () => {
         formRef.current,
         EMAILJS_USER_ID
       );
-  
-      setOpenSnackbar(true);
+
+      toast.success("Message sent successfully!", {
+        id: loadingToast,
+        duration: 5000,
+        icon: "🚀",
+      });
       formRef.current.reset();
     } catch (err) {
-      console.error('Error:', err.message);
+      toast.error("Failed to send message. Please try again.", {
+        id: loadingToast,
+        duration: 5000,
+      });
+      console.error("Error:", err.message);
     }
   };
-  
 
   return (
     <Container id="contact">
       <Wrapper>
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: "#333",
+              color: "#fff",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              borderRadius: "10px",
+            },
+            success: {
+              iconTheme: {
+                primary: "#4ade80",
+                secondary: "#fff",
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: "#ef4444",
+                secondary: "#fff",
+              },
+            },
+          }}
+        />
         <Title>Contact</Title>
-        <Desc>Feel free to reach out to me for any questions or opportunities!</Desc>
+        <Desc>
+          Feel free to reach out to me for any questions or opportunities!
+        </Desc>
         <ContactForm ref={formRef} onSubmit={handleSubmit}>
           <ContactTitle>Email Me 🚀</ContactTitle>
           <ContactInput placeholder="Your Email" name="from_email" />
@@ -169,13 +220,6 @@ const Contact = () => {
           <ContactInputMessage placeholder="Message" rows="4" name="message" />
           <ContactButton type="submit" value="Send" />
         </ContactForm>
-        <Snackbar
-          open={openSnackbar}
-          autoHideDuration={6000}
-          onClose={() => setOpenSnackbar(false)}
-        >
-          <SnackbarContent message="Email sent successfully!" />
-        </Snackbar>
       </Wrapper>
     </Container>
   );
