@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "../../supabaseClient";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { fetchSkillsData } from "../../api/supabase";
+import { fetchSkillsWithCategories } from "../../api/supabase";
 
 const Container = styled.div`
   display: flex;
@@ -141,16 +140,26 @@ const SkillImage = styled.img`
 `;
 
 const Skills = () => {
-  const [skills, setSkills] = useState([]);
+  const [skillsData, setSkillsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const getSkillsData = async () => {
-      const { data, error } = await fetchSkillsData();
-      if (!error && data) {
-        setSkills(data);
+    const fetchSkills = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await fetchSkillsWithCategories();
+        if (error) throw error;
+        setSkillsData(data);
+      } catch (error) {
+        console.error("Error fetching skills:", error.message);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
     };
-    getSkillsData();
+
+    fetchSkills();
   }, []);
 
   // Animation variants
@@ -186,6 +195,26 @@ const Skills = () => {
     },
   };
 
+  if (loading)
+    return (
+      <Container id="skills">
+        <Wrapper>
+          <Title>Skills</Title>
+          <Desc>Loading skills...</Desc>
+        </Wrapper>
+      </Container>
+    );
+
+  if (error)
+    return (
+      <Container id="skills">
+        <Wrapper>
+          <Title>Skills</Title>
+          <Desc>Error: {error}</Desc>
+        </Wrapper>
+      </Container>
+    );
+
   return (
     <Container id="skills">
       <Wrapper>
@@ -196,21 +225,23 @@ const Skills = () => {
           animate="visible"
         >
           <SkillsContainer>
-            {skills.map((category, index) => (
+            {skillsData.map((category) => (
               <Skill
-                key={index}
+                key={category.id}
                 variants={skillVariants}
                 whileHover={{ scale: 1.02 }}
               >
                 <SkillTitle>{category.title}</SkillTitle>
                 <SkillList>
-                  {category.skills.map((item, idx) => (
+                  {category.skills.map((item) => (
                     <SkillItem
-                      key={idx}
+                      key={item.id}
                       variants={itemVariants}
                       whileHover={{ scale: 1.05 }}
                     >
-                      <SkillImage src={item.image} alt={item.name} />
+                      {item.image && (
+                        <SkillImage src={item.image} alt={item.name} />
+                      )}
                       {item.name}
                     </SkillItem>
                   ))}

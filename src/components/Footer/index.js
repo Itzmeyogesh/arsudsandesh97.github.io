@@ -6,6 +6,7 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import { supabase } from "../../supabaseClient";
 import { fetchBioData } from "../../api/supabase";
+import { fetchCopyrightData } from "../../api/supabase";
 
 const FooterContainer = styled.div`
   width: 100%;
@@ -87,14 +88,33 @@ const Copyright = styled.p`
 
 const Footer = () => {
   const [footerData, setFooterData] = useState({});
+  const [copyrightData, setCopyrightData] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getFooterData = async () => {
-      const { data, error } = await fetchBioData();
-      if (!error && data) {
-        setFooterData(data);
+      try {
+        setLoading(true);
+        // Fetch both bio and copyright data in parallel
+        const [bioResponse, copyrightResponse] = await Promise.all([
+          fetchBioData(),
+          fetchCopyrightData(),
+        ]);
+
+        if (!bioResponse.error && bioResponse.data) {
+          setFooterData(bioResponse.data);
+        }
+
+        if (!copyrightResponse.error && copyrightResponse.data) {
+          setCopyrightData(copyrightResponse.data);
+        }
+      } catch (error) {
+        console.error("Error fetching footer data:", error);
+      } finally {
+        setLoading(false);
       }
     };
+
     getFooterData();
   }, []);
 
@@ -121,7 +141,11 @@ const Footer = () => {
           </SocialMediaIcon>
         </SocialMediaIcons>
         <Copyright>
-          {footerData?.copyright || "© 2024. All rights reserved."}
+          {loading
+            ? "Loading..."
+            : copyrightData?.copyright ||
+              footerData?.copyright ||
+              "© 2024. All rights reserved."}
         </Copyright>
       </FooterWrapper>
     </FooterContainer>
