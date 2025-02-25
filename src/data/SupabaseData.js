@@ -27,7 +27,9 @@ export const fetchSkillsData = async () => {
 // Fetch Projects Data
 export const fetchProjects = async () => {
   try {
-    const { data, error } = await supabase.from("projects").select("*");
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*,members(*),associations(*)");
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -56,18 +58,6 @@ export const fetchEducation = async () => {
     return { data, error: null };
   } catch (error) {
     console.error("Error fetching education data:", error);
-    return { data: null, error };
-  }
-};
-
-// Fetch Navigation Data
-export const fetchNavData = async () => {
-  try {
-    const { data, error } = await supabase.from("nav").select("*").single();
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error) {
-    console.error("Error fetching nav data:", error);
     return { data: null, error };
   }
 };
