@@ -75,11 +75,15 @@ const Top = styled.div`
 
 const Image = styled.img`
   height: 50px;
-  background-color: #000;
+  width: 50px;
+  background-color: ${({ theme }) => theme.card_light};
   border-radius: 10px;
   margin-top: 4px;
+  object-fit: cover;
+
   @media only screen and (max-width: 768px) {
     height: 40px;
+    width: 40px;
   }
 `;
 
@@ -126,6 +130,10 @@ const Grade = styled.div`
 `;
 
 const EducationCard = ({ education }) => {
+  const placeholderImage = `https://placehold.co/50x50/1d1836/ffffff?text=${
+    education.school?.charAt(0) || "?"
+  }`;
+
   return (
     <VerticalTimelineElement
       icon={
@@ -135,6 +143,9 @@ const EducationCard = ({ education }) => {
           alt={education.school}
           style={{ borderRadius: "50%", objectFit: "cover" }}
           src={education.img}
+          onError={(e) => {
+            e.target.src = placeholderImage;
+          }}
         />
       }
       contentStyle={{
@@ -155,7 +166,13 @@ const EducationCard = ({ education }) => {
       date={education.date}
     >
       <Top>
-        <Image src={education.img} />
+        <Image
+          src={education.img}
+          alt={education.school}
+          onError={(e) => {
+            e.target.src = placeholderImage;
+          }}
+        />
         <Body>
           <Name>{education.school}</Name>
           <Degree>{education.degree}</Degree>

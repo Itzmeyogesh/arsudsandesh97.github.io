@@ -50,7 +50,12 @@ const StarCanvas = React.lazy(() => import("../canvas/Stars"));
 const HeroSection = () => {
   const [bioData, setBioData] = useState({});
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const theme = useTheme();
+
+  const placeholderImage = `https://placehold.co/400x400/1d1836/ffffff?text=${
+    bioData.name?.charAt(0) || "?"
+  }`;
 
   // Prefetch and cache bio data
   useEffect(() => {
@@ -76,7 +81,14 @@ const HeroSection = () => {
     if (bioData?.Image) {
       const img = new Image();
       img.src = bioData.Image;
-      img.onload = () => setImageLoaded(true);
+      img.onload = () => {
+        setImageLoaded(true);
+        setImageError(false);
+      };
+      img.onerror = () => {
+        setImageLoaded(true);
+        setImageError(true);
+      };
     }
   }, [bioData?.Image]);
 
@@ -147,11 +159,20 @@ const HeroSection = () => {
                         transition={{ duration: 0.8, ease: "easeOut" }}
                       >
                         <Img
-                          src={bioData.Image}
+                          src={imageError ? placeholderImage : bioData.Image}
                           alt={bioData.name || "Profile"}
                           loading="lazy"
                           width="400"
                           height="400"
+                          onError={(e) => {
+                            e.target.src = placeholderImage;
+                            setImageError(true);
+                          }}
+                          style={{
+                            opacity: imageLoaded ? 1 : 0,
+                            transition: "opacity 0.3s ease-in-out",
+                            backgroundColor: theme.card_light,
+                          }}
                         />
                       </FloatingImage>
                     </Tilt>

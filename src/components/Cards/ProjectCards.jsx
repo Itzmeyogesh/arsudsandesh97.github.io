@@ -37,13 +37,14 @@ const Card = styled.div`
   }
 `;
 
+// Update the Image styled component
 const Image = styled.img`
   width: 100%;
   height: 180px;
-  background-color: ${({ theme }) => theme.white};
+  background-color: ${({ theme }) => theme.card_light};
   border-radius: 10px;
   box-shadow: 0 0 16px 2px rgba(0, 0, 0, 0.3);
-  object-fit: cover; // Ensure images cover the space properly
+  object-fit: cover;
   ${({ isLoading }) =>
     isLoading &&
     `
@@ -178,7 +179,7 @@ const OptimizedImage = memo(({ src, alt, onLoad, onError, isLoading }) => {
 });
 
 // Update OptimizedAvatar component
-const OptimizedAvatar = memo(({ member, type, placeholderImage }) => {
+const OptimizedAvatar = memo(({ member, type, placeholderImage, onError }) => {
   const AvatarComponent = type === "member" ? MemberAvatar : AssociationAvatar;
   const optimizedSrc = optimizeImageUrl(member.img) || placeholderImage;
 
@@ -190,16 +191,17 @@ const OptimizedAvatar = memo(({ member, type, placeholderImage }) => {
       }`}
       loading="lazy"
       decoding="async"
-      onError={(e) => {
-        e.target.src = placeholderImage;
-      }}
+      onError={onError}
     />
   );
 });
 
 // Update ProjectCards component
 const ProjectCards = memo(({ project, setOpenModal }) => {
-  const placeholderImage = "https://via.placeholder.com/150";
+  // Replace the static placeholder with a dynamic one
+  const placeholderImage = `https://placehold.co/330x180/1d1836/ffffff?text=${
+    project.title?.charAt(0) || "?"
+  }`;
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleImageLoad = useCallback(() => {
@@ -209,16 +211,23 @@ const ProjectCards = memo(({ project, setOpenModal }) => {
   const handleImageError = useCallback(
     (e) => {
       e.target.src = placeholderImage;
+      setImageLoaded(true); // Remove loading blur when showing placeholder
     },
     [placeholderImage]
   );
 
+  // Update the OptimizedAvatar error handling
+  const handleAvatarError = useCallback((e) => {
+    const initial = e.target.alt?.charAt(0) || "?";
+    e.target.src = `https://placehold.co/40x40/1d1836/ffffff?text=${initial}`;
+  }, []);
+
+  // Update the optimizedProjectImage with fallback
+  const optimizedProjectImage = optimizeImageUrl(project.image);
+
   const handleCardClick = useCallback(() => {
     setOpenModal({ state: true, project });
   }, [project, setOpenModal]);
-
-  const optimizedProjectImage =
-    optimizeImageUrl(project.image) || placeholderImage;
 
   return (
     <Card onClick={handleCardClick}>
@@ -249,7 +258,10 @@ const ProjectCards = memo(({ project, setOpenModal }) => {
               key={member.id}
               member={member}
               type="member"
-              placeholderImage={placeholderImage}
+              placeholderImage={`https://placehold.co/40x40/1d1836/ffffff?text=${
+                member.name?.charAt(0) || "?"
+              }`}
+              onError={handleAvatarError}
             />
           ))}
         </Members>
@@ -262,7 +274,10 @@ const ProjectCards = memo(({ project, setOpenModal }) => {
               key={assoc.id}
               member={assoc}
               type="association"
-              placeholderImage={placeholderImage}
+              placeholderImage={`https://placehold.co/40x40/1d1836/ffffff?text=${
+                assoc.name?.charAt(0) || "?"
+              }`}
+              onError={handleAvatarError}
             />
           ))}
         </Members>

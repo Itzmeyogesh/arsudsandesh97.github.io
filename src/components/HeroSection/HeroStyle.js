@@ -102,15 +102,15 @@ export const HeroRightContainer = styled.div`
 `;
 
 export const Img = styled.img`
-  position: relative;
   width: 100%;
   height: 100%;
+  position: relative;
+  border-radius: 50%;
   max-width: 400px;
   max-height: 400px;
-  border-radius: 50%;
   object-fit: cover;
-  border: 2px solid ${({ theme }) => theme.primary};
-  transition: all 0.3s ease;
+  border: 2px solid ${({ theme }) => theme.primary + "20"};
+  transition: all 0.3s ease-in-out;
 
   @media (max-width: 768px) {
     max-width: 300px;
