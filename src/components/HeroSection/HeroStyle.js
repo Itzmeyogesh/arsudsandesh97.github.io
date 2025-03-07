@@ -109,8 +109,21 @@ export const Img = styled.img`
   max-width: 400px;
   max-height: 400px;
   object-fit: cover;
-  border: 2px solid ${({ theme }) => theme.primary + "20"};
+  border: 4px solid ${({ theme }) => theme.primary + "20"};
+  padding: 8px;
+  background: linear-gradient(
+    225deg,
+    ${({ theme }) => theme.primary + "20"} 0%,
+    ${({ theme }) => theme.primary + "10"} 100%
+  );
+  box-shadow: 0 0 20px ${({ theme }) => theme.primary + "50"};
   transition: all 0.3s ease-in-out;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.primary + "50"};
+    box-shadow: 0 0 30px ${({ theme }) => theme.primary + "80"};
+    transform: scale(1.02);
+  }
 
   @media (max-width: 768px) {
     max-width: 300px;
@@ -243,4 +256,40 @@ export const LoadingContainer = styled.div`
   background: ${({ theme }) => theme.card_light};
   color: ${({ theme }) => theme.text_primary};
   font-size: 1.5rem;
+`;
+
+export const ImageContainer = styled.div`
+  position: relative;
+  border-radius: 50%;
+  &::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(
+      45deg,
+      ${({ theme }) => theme.primary + "20"} 0%,
+      transparent 100%
+    );
+    border-radius: 50%;
+    z-index: -1;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+  }
 `;

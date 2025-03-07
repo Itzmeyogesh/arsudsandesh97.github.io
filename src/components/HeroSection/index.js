@@ -24,6 +24,7 @@ import {
   ResumeButton,
   FloatingImage,
   LoadingContainer,
+  ImageContainer,
 } from "./HeroStyle";
 
 // Styled components for skeletons
@@ -158,22 +159,24 @@ const HeroSection = () => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
                       >
-                        <Img
-                          src={imageError ? placeholderImage : bioData.Image}
-                          alt={bioData.name || "Profile"}
-                          loading="lazy"
-                          width="400"
-                          height="400"
-                          onError={(e) => {
-                            e.target.src = placeholderImage;
-                            setImageError(true);
-                          }}
-                          style={{
-                            opacity: imageLoaded ? 1 : 0,
-                            transition: "opacity 0.3s ease-in-out",
-                            backgroundColor: theme.card_light,
-                          }}
-                        />
+                        <ImageContainer>
+                          <Img
+                            src={imageError ? placeholderImage : bioData.Image}
+                            alt={bioData.name || "Profile"}
+                            loading="lazy"
+                            width="400"
+                            height="400"
+                            onError={(e) => {
+                              e.target.src = placeholderImage;
+                              setImageError(true);
+                            }}
+                            style={{
+                              opacity: imageLoaded ? 1 : 0,
+                              transition: "opacity 0.3s ease-in-out",
+                              backgroundColor: theme.card_light,
+                            }}
+                          />
+                        </ImageContainer>
                       </FloatingImage>
                     </Tilt>
                   </Suspense>
