@@ -29,4 +29,4 @@ jobs:
 
       # Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
-        run: npm run deploy
+        run: CI=false npm run deploy
