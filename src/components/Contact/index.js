@@ -177,7 +177,7 @@ const Contact = () => {
     const message = form.message.value;
 
     // Open default email client
-    const mailtoLink = `mailto:contact.arsudsandesh@gmail.com?subject=${encodeURIComponent(
+    const mailtoLink = `mailto:contact.gadekarswati502@gmail.com?subject=${encodeURIComponent(
       subject
     )}&body=${encodeURIComponent(
       `From: ${name} (${email})\n\nMessage:\n${message}`
