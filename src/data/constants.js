@@ -8,7 +8,7 @@ export const Bio = {
   description:
     "Driven Data Analyst with internship experience at Code Spyder Technologies. Proficient in Python, SQL, and data visualization tools such as Power BI and Matplotlib. Specialized in transforming complex datasets into actionable insights using feature engineering and predictive modeling. Successfully deployed real-world applications, including house price prediction and sentiment analysis. Passionate about leveraging data for impactful decisions.",
   github: "https://github.com/SWATIG01",
-  resume: "C:\Users\admin\arsudsandesh97.github.io\5_6321244304027161508.pdf",
+  resume: "Swati_Gadekar_Resume.pdf",
   linkedin: "https://www.linkedin.com/in/swatigadekar09/",
 };
 
